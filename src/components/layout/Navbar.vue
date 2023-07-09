@@ -6,11 +6,18 @@
             </router-link>
         </div>
         <div class="navbar-menu">
+            
             <div class="navbar-end">
+                <router-link to="/dashboard/leads" class="navbar-item">Leads</router-link>
                 <div class="navbar-item">
                     <div class="buttons">
-                        <router-link to="/sign-up" class="button is-success"><strong>Sign Up</strong></router-link>
-                        <router-link to="/log-in" class="button is-light">Log In</router-link>
+                        <template v-if="!this.$store.state.isAuthenticated">
+                            <router-link to="/sign-up" class="button is-success"><strong>Sign Up</strong></router-link>
+                            <router-link to="/log-in" class="button is-light">Log In</router-link>
+                        </template>
+                        <template v-else>
+                            <router-link to="/dashboard/myaccount" class="button is-info">MyAccount</router-link>
+                        </template>
                     </div>
                 </div>
             </div>

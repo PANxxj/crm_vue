@@ -21,7 +21,7 @@ export default createStore({
     setIsLoading(state,status){
       state.isLoading=status 
     },
-    setToken(state,status){
+    setToken(state,token){
       state.token=token
       state.isAuthenticated=true
     },
