@@ -82,7 +82,16 @@ export default {
                                 this.errors.push('somthing went wrong please try again')
                         }
                     })
-                    this.$store.commit('setIsLoading',false)
+                axios
+                    .get('api/v1/users/me')
+                    .then(response =>{
+                        this.$store.commit('serUser',{'id':response.data.id, 'username':response.data.username})
+
+                        localStorage.setItem('username',response.data.username)
+                        localStorage.setItem('userid',response.data.id)
+                    })
+
+                this.$store.commit('setIsLoading',false)
 
         }
 },
