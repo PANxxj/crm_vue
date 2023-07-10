@@ -60,35 +60,38 @@ export default {
             await axios
                 .post('api/v1/token/login', formData)
                 .then(response =>{
-                    const {auth_token} = response.data;
-                    console.log(auth_token);
-                    console.log(auth_token)
+                    const token= response.data.auth_token;
+                    console.log(token);
+                    console.log(token)
 
 
-                    this.$store.commit('setToken',auth_token)
+                    this.$store.commit('setToken',token)
 
-                    axios.defaults.headers.common['Authorization'] = 'Token ' + auth_token
-                    localStorage.setItem('token', auth_token)
-                    this.$router.push('/dashboard/myaccount')
-                    console.log(":::::::::::::::::",this.$router.push('/dashboard/myaccount'))
+                    axios.defaults.headers.common['Authorization'] = 'Token ' + token
+                    localStorage.setItem('token', token)
                 })
                 .catch(error => {
-                        if (error.response){
-                            for (const property in error.response.data){
-                                this.errors.push(`${property}: ${error.response.data[property]}`)
-                            } 
-                        }else if(error.message){
-                                console.log(":::::::::::",error)
-                                this.errors.push('somthing went wrong please try again')
-                        }
-                    })
-                axios
-                    .get('api/v1/users/me')
-                    .then(response =>{
-                        this.$store.commit('serUser',{'id':response.data.id, 'username':response.data.username})
-
-                        localStorage.setItem('username',response.data.username)
-                        localStorage.setItem('userid',response.data.id)
+                    if (error.response){
+                        for (const property in error.response.data){
+                            this.errors.push(`${property}: ${error.response.data[property]}`)
+                        } 
+                    }else if(error.message){
+                        console.log(":::::::::::",error)
+                        this.errors.push('somthing went wrong please try again')
+                    }
+                })
+                await axios
+                .get('api/v1/users/me')
+                .then(response =>{
+                    this.$store.commit('setUser',{'id':response.data.id, 'username':response.data.username})
+                    
+                    localStorage.setItem('username',response.data.username)
+                    localStorage.setItem('userid',response.data.id)
+                    // console.log(username);
+                    this.$router.push('/dashboard/myaccount')
+                })
+                    .catch(error =>{
+                        console.log(error);
                     })
 
                 this.$store.commit('setIsLoading',false)
