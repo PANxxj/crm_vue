@@ -11,6 +11,7 @@
                         <tr>
                             <th>Company</th>
                             <th>Conact Person</th>
+                            <th>Assigned To</th>
                             <th>Status</th>
                             <th></th>
                         </tr>
@@ -19,6 +20,9 @@
                         <tr v-for="lead in leads" :key="lead.id">
                             <td>{{ lead.company }}</td>
                             <td>{{ lead.contact_person }}</td>
+                            <td>
+                                <template v-if="lead.assigned_to">{{ lead.assigned_to.username }}</template>
+                            </td>
                             <td>{{ lead.status  }}</td>
                             <td>
                                 <router-link :to="{name:'Lead',params:{id:lead.id}}">Details</router-link>
@@ -48,7 +52,7 @@ export default {
         async getLeads(){
             this.$store.commit('setIsLoading',true)
 
-            axios
+            await axios
                 .get('api/v1/leads/')
                 .then(response =>{
                     this.leads=response.data

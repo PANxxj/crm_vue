@@ -10,6 +10,9 @@
             <div class="column is-6">
                 <div class="box">
                     <h2 class="subtitle">Details</h2>
+                    <template v-if="lead.assigned_to">
+                        <p><strong>Assigned To : </strong>{{ lead.assigned_to.username }}</p>
+                    </template>
                     <p><strong>Status : </strong>{{ lead.status }}</p>
                     <p><strong>Priority : </strong>{{ lead.priority }}</p>
                     <p><strong>Confidience : </strong>{{ lead.confidence }}</p>
@@ -49,7 +52,7 @@ export default {
             this.$store.commit('setIsLoading',true)
 
             const leadId=this.$route.params.id
-            axios
+            await axios
                 .get(`api/v1/leads/${leadId}`)
                 .then(response =>{
                     this.lead=response.data
