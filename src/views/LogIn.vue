@@ -80,7 +80,7 @@ export default {
                         this.errors.push('somthing went wrong please try again')
                     }
                 })
-                await axios
+            await axios
                 .get('api/v1/users/me')
                 .then(response =>{
                     this.$store.commit('setUser',{'id':response.data.id, 'username':response.data.username})
@@ -90,11 +90,20 @@ export default {
                     // console.log(username);
                     this.$router.push('/dashboard/myaccount')
                 })
-                    .catch(error =>{
+                .catch(error =>{
                         console.log(error);
-                    })
+                })
 
-                this.$store.commit('setIsLoading',false)
+            await axios
+                .get('api/v1/teams/get_my_team')
+                .then(response =>{
+                    this.$store.commit('setTeam',{'id':response.data.id,'name':response.data.name});
+                })
+                .catch(error =>{
+                        console.log(error);
+                })
+
+            this.$store.commit('setIsLoading',false)
 
         }
 },
