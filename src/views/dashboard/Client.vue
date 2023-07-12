@@ -23,6 +23,20 @@
                     <p><strong>Website : </strong>{{ client.website }}</p>
                 </div>
             </div>
+            <hr>
+
+            <div class="column is-12">
+                <h1 class="subtitle">Notes</h1>
+
+                <router-link :to="{name:'AddNote',params:{id:client.id}}" class="button is-success mb-4">Add Note</router-link>
+                <div class="box" 
+                v-for="note in notes"
+                :key="note.id">
+                <h1 class="is-size-4">{{ note.name }}</h1>
+                <p>{{ note.body }}</p>
+                <router-link :to="{name:'AddNote',params:{id:client.id,note_id:note.id}}" class="button is-success mt-4">Add Note</router-link>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -33,7 +47,8 @@ export default {
     name:'Client',
     data(){
         return {
-            client:{}
+            client:{},
+            notes:[ ]
         }
     },
     mounted(){
@@ -51,6 +66,16 @@ export default {
                 })
                 .catch(error =>{
                     console.log(error);
+                })
+            await axios
+                .get(`api/v1/notes/?client_id=${clientId}`)
+                .then(response =>{
+                    this.notes = response.data;
+
+                })
+                .catch(error =>{
+                    console.log(error);
+
                 })
             
             this.$store.commit('setIsLoading',false)
