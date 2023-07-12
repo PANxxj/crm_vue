@@ -8,16 +8,16 @@
             <div class="column is-12">
                 <form @submit.prevent="submitForm">
                     <div class="field">
-                        <label >Name</label>
+                        <label >First Name</label>
                         <div class="control">
-                            <input type="text" name="name" class="input" v-model="note.name">
+                            `<input type="text" name="name" class="input" v-model="user.first_name">`
                         </div>
                     </div>
 
                     <div class="field">
-                        <label >Body</label>
+                        <label >Last Name</label>
                         <div class="control">
-                            <textarea class="textarea" v-model="note.body"></textarea>
+                            <input type="text" name="name" class="input" v-model="user.last_name">
                         </div>
                     </div>
 
@@ -37,25 +37,24 @@
 import axios from 'axios';
 import { toast } from 'bulma-toast';
 export default {
-    name:'EditNote',
+    name:'EditMember',
     data(){
         return {
-            note:{}
+            user:{}
         }
     },
     mounted(){
-        this.getNote()
+        this.getUser()
     },
     methods:{
-        async getNote(){
+        async getUser(){
             this.$store.commit('setIsLoading',true)
 
-            const noteId=this.$route.params.note_id
-            const clientId=this.$route.params.id
+            const userId=this.$route.params.id
             await axios
-                .get(`api/v1/notes/${noteId}/?client_id=${clientId}`)
+                .get(`api/v1/teams/member_detail/${userId}`)
                 .then(response =>{
-                    this.note=response.data
+                    this.user=response.data
                 })
                 .catch(error =>{
                     console.log(error);
@@ -65,14 +64,13 @@ export default {
         },
         async submitForm(){
             this.$store.commit('setIsLoading',true)
-            const noteId=this.$route.params.note_id
-            const clientId=this.$route.params.id
+            const userId=this.$route.params.id
             await axios
-                .patch(`api/v1/notes/${noteId}/?client_id=${clientId}`,this.note)
+                .put(`api/v1/teams/member_detail/${userId}`,this.user)
                 .then(response =>{
                     console.log(response);
                     toast({
-                            message:'The note has been updated',
+                            message:'The user has been updated',
                             type:'is-success',
                             dismissible:true,
                             pauseOnHover:true,
@@ -80,7 +78,7 @@ export default {
                             position:'bottom-right'
                         })
 
-                    this.$router.push({name:'Client',params:{'id':this.$route.params.id}})
+                    this.$router.push({name:'MyAccount'})
                 })
                 .catch(error =>{
                     console.log(error);

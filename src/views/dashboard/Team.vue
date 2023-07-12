@@ -15,12 +15,14 @@
                 <table class="table is-fullwidth">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Full Name</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="member in team.members" :key="member.id">
                             <td>{{ member.username }}</td>
+                            <td>{{ member.first_name }} {{ member.last_name }}</td>
                         </tr>
                     </tbody>
                 </table>

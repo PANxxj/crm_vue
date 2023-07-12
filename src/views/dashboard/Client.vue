@@ -34,7 +34,7 @@
                 :key="note.id">
                 <h1 class="is-size-4">{{ note.name }}</h1>
                 <p>{{ note.body }}</p>
-                <router-link :to="{name:'AddNote',params:{id:client.id,note_id:note.id}}" class="button is-success mt-4">Add Note</router-link>
+                <router-link :to="{name:'EditNote',params:{id:client.id,note_id:note.id}}" class="button is-success mt-4">Edit Note</router-link>
                 </div>
             </div>
         </div>

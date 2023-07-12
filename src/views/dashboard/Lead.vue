@@ -4,14 +4,18 @@
             <div class="column is-12">
                 <h1 class="title">{{ lead.company }}</h1>
 
-                <router-link :to="{name:'EditLead',params:{id:lead.id}}" class="button is-light">Edit</router-link>
+                <div class="buttons">
+                    <router-link :to="{name:'EditLead',params:{id:lead.id}}" class="button is-light">Edit</router-link>
+                    <button @click="convertToClient" class="button is-info">Convert To Client</button>
+                    
+                </div>
             </div>
 
             <div class="column is-6">
                 <div class="box">
                     <h2 class="subtitle">Details</h2>
                     <template v-if="lead.assigned_to">
-                        <p><strong>Assigned To : </strong>{{ lead.assigned_to.username }}</p>
+                        <p><strong>Assigned To : </strong>{{ lead.assigned_to.first_name }} {{ lead.assigned_to.last_name }}</p>
                     </template>
                     <p><strong>Status : </strong>{{ lead.status }}</p>
                     <p><strong>Priority : </strong>{{ lead.priority }}</p>
@@ -56,6 +60,26 @@ export default {
                 .get(`api/v1/leads/${leadId}`)
                 .then(response =>{
                     this.lead=response.data
+                })
+                .catch(error =>{
+                    console.log(error);
+                })
+            
+            this.$store.commit('setIsLoading',false)
+        },
+        async convertToClient(){
+            this.$store.commit('setIsLoading',true)
+
+            const leadId=this.$route.params.id
+            const data={
+                lead_id:leadId
+            }
+            await axios
+                .post(`api/v1/convert_lead_to_client`,data)
+                .then(response =>{
+                    console.log('converted to client');
+
+                    this.$router.push('/dashboard/clients')
                 })
                 .catch(error =>{
                     console.log(error);
