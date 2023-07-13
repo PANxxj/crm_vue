@@ -4,6 +4,18 @@
             <div class="column is-12">
                 <h1 class="title">leads</h1>
                 <router-link to="/dashboard/leads/add">Add leads</router-link>
+                <hr>
+
+                <form @submit.prevent="getLeads">
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input type="text" class="input" v-model="query">
+                        </div>
+                        <div class="control">
+                            <button class="button is-success">Search</button>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="column is-12">
                 <table class="table is-fullwidth">
@@ -31,6 +43,10 @@
 
                     </tbody>
                 </table>
+                <div class="buttons">
+                    <button class="button is-light" @click="goPrevPage()" v-if="showPrevButton">Previous</button>
+                    <button class="button is-light" @click="goNextPage()" v-if="showNextButton">Next</button>
+                </div>
             </div>
         </div>
     </div>
@@ -42,20 +58,43 @@ export default {
     name:'Leads',
     data(){
         return {
-            leads:[]
+            leads:[],
+            showNextButton:false,
+            showPrevButton:false,
+            currentPage:1,
+            query:''
         }
     },
     mounted(){
         this.getLeads()
     },
     methods:{
+        goNextPage(){
+            this.currentPage +=1
+            this.getLeads()
+        },
+        goPrevPage(){
+            this.currentPage -=1
+            this.getLeads()
+        },
         async getLeads(){
             this.$store.commit('setIsLoading',true)
+            this.showNextButton=false
+            this.showPrevButton=false
 
             await axios
-                .get('api/v1/leads/')
+                .get(`api/v1/leads/?page=${this.currentPage}&search=${this.query}`)
                 .then(response =>{
-                    this.leads=response.data
+                    this.leads=response.data.results
+                    console.log('data',response.data.results);
+                    console.log('next',response.data.next);
+                    
+                    if(response.data.next){
+                        this.showNextButton=true
+                    }
+                    if(response.data.previous){
+                        this.showPrevButton=true
+                    }
                 })
                 .catch(error =>{
                     console.log(error);
@@ -63,7 +102,7 @@ export default {
 
 
             this.$store.commit('setIsLoading',false)
-        }
+        },
     }
 }
 </script>

@@ -4,6 +4,17 @@
             <div class="column is-12">
                 <h1 class="title">Clients</h1>
                 <router-link to="/dashboard/clients/add">Add Clients</router-link>
+                <hr>
+                <form @submit.prevent="getClients">
+                    <div class="field has-addons">
+                        <div class="control">
+                            <input type="text" class="input" v-model="query">
+                        </div>
+                        <div class="control">
+                            <button class="button is-success">Search</button>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="column is-12">
                 <template v-if="clients.length">
@@ -26,6 +37,10 @@
 
                         </tbody>
                     </table>
+                    <div class="buttons">
+                    <button class="button is-light" @click="goPrevPage()" v-if="showPrevButton">Previous</button>
+                    <button class="button is-light" @click="goNextPage()" v-if="showNextButton">Next</button>
+                </div>
                 </template>
                 <template v-else>
                     <p>You don't have any clients yet !     </p>
@@ -41,20 +56,41 @@ export default {
     name:'Clients',
     data(){
         return {
-            clients:[]
+            clients:[],
+            showNextButton:false,
+            showPrevButton:false,
+            currentPage:1,
+            query:''
         }
     },
     mounted(){
         this.getClients()
     },
     methods:{
+        goNextPage(){
+            this.currentPage +=1
+            this.getClients()
+        },
+        goPrevPage(){
+            this.currentPage -=1
+            this.getClients()
+        },
         async getClients(){
             this.$store.commit('setIsLoading',true)
+            this.showNextButton=false
+            this.showPrevButton=false
 
             await axios
-                .get('api/v1/clients/')
+                .get(`api/v1/clients/?page=${this.currentPage}&search=${this.query}`)
                 .then(response =>{
-                    this.clients=response.data
+                    this.clients=response.data.results
+
+                    if(response.data.next){
+                        this.showNextButton=true
+                    }
+                    if(response.data.previous){
+                        this.showPrevButton=true
+                    }
                 })
                 .catch(error =>{
                     console.log(error);
