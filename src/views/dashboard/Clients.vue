@@ -3,7 +3,14 @@
         <div class="columns is-multiline">
             <div class="column is-12">
                 <h1 class="title">Clients</h1>
-                <router-link to="/dashboard/clients/add">Add Clients</router-link>
+                <router-link to="/dashboard/clients/add"
+                v-if="$store.state.team.max_leads>num_clients"
+                >Add Clients</router-link>
+
+                <div class="notification is-danger" v-else>
+                    you have reached your limitions ! please upgrade
+                </div>
+                
                 <hr>
                 <form @submit.prevent="getClients">
                     <div class="field has-addons">
@@ -60,7 +67,8 @@ export default {
             showNextButton:false,
             showPrevButton:false,
             currentPage:1,
-            query:''
+            query:'',
+            num_clients:0
         }
     },
     mounted(){
@@ -79,7 +87,11 @@ export default {
             this.$store.commit('setIsLoading',true)
             this.showNextButton=false
             this.showPrevButton=false
-
+            await axios
+                .get(`api/v1/clients/`)
+                .then(response =>{
+                    this.num_clients=response.data.count
+                })
             await axios
                 .get(`api/v1/clients/?page=${this.currentPage}&search=${this.query}`)
                 .then(response =>{

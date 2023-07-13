@@ -3,7 +3,12 @@
         <div class="columns is-multiline">
             <div class="column is-12">
                 <h1 class="title">leads</h1>
-                <router-link to="/dashboard/leads/add">Add leads</router-link>
+                <router-link to="/dashboard/leads/add"
+                    v-if="$store.state.team.max_leads>num_leads"
+                >Add leads</router-link>
+                <div class="notification is-danger" v-else>
+                    you have reached your limitions ! please upgrade
+                </div>
                 <hr>
 
                 <form @submit.prevent="getLeads">
@@ -62,7 +67,8 @@ export default {
             showNextButton:false,
             showPrevButton:false,
             currentPage:1,
-            query:''
+            query:'',
+            num_leads:0
         }
     },
     mounted(){
@@ -83,10 +89,16 @@ export default {
             this.showPrevButton=false
 
             await axios
+                .get(`api/v1/leads/`)
+                .then(response =>{
+                    this.num_leads=response.data.count
+                    console.log('data',response.data);
+                })
+
+            await axios
                 .get(`api/v1/leads/?page=${this.currentPage}&search=${this.query}`)
                 .then(response =>{
                     this.leads=response.data.results
-                    console.log('data',response.data.results);
                     console.log('next',response.data.next);
                     
                     if(response.data.next){

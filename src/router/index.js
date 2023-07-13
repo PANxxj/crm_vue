@@ -19,7 +19,9 @@ import Client from '../views/dashboard/Client.vue'
 import EditClient from '../views/dashboard/EditClient.vue'
 import AddNote from '../views/dashboard/AddNote.vue'
 import EditNote from '../views/dashboard/EditNote.vue'
-import EditMember from '../views/dashboard/EditMember.vue'
+import EditMember from '../views/dashboard/EditMember.vue' 
+import Plan from '../views/dashboard/Plan.vue' 
+import PlansThankyou from '../views/dashboard/PlansThankyou.vue' 
 
 const routes = [
   {
@@ -173,6 +175,22 @@ const routes = [
       requireLogin:true
     }
   },
+  {
+    path:'/dashboard/team/plan',
+    name:'Plan',
+    component:Plan,
+    meta:{
+      requireLogin:true
+    }
+  },
+  {
+    path:'/dashboard/team/plan/thankyou',
+    name:'PlansThankyou',
+    component:PlansThankyou,
+    meta:{
+      requireLogin:true
+    }
+  }
 ]
 
 const router = createRouter({
