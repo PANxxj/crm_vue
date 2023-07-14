@@ -44,13 +44,36 @@
 
 <script>
 import axios from 'axios';
+import { toast } from 'bulma-toast'
 export default {
     name:'Plan',
     data(){
         return {
+            pub_key: '',
+            stripe:null
         }
     },
+    async mounted(){
+        await this.getPubKey()
+        this.stripe=Stripe(this.pub_key)
+    },
     methods:{
+        async getPubKey(){
+            this.$store.commit('setIsLoading',true)
+            
+            
+            
+            await axios
+            .get(`api/v1/stripe/get_strip_pub_key`)
+            .then(response =>{
+                console.log(response.data);
+                this.pub_key=response.data.pub_key
+            })
+            .catch(error =>{
+                console.log(error);
+            })
+            this.$store.commit('setIsLoading',false)
+        },
         async subscribe(plan){
             this.$store.commit('setIsLoading',true)
 
@@ -70,6 +93,15 @@ export default {
                             'max_clients':response.data.plan.max_clients
                     
                     });
+                    toast({
+                            message:'The you plan has been updated',
+                            type:'is-success',
+                            dismissible:true,
+                            pauseOnHover:true,
+                            duration:2000,
+                            position:'bottom-right'
+                        })
+
                     this.$router.push('/dashboard/team')
                     })
                     .catch(error =>{
