@@ -81,32 +81,42 @@ export default {
                 plan:plan
             }
 
-            await axios
-                    .post(`api/v1/teams/upgrade_plan`,data)
-                    .then(response =>{
-                        console.log(response.data);
-                        this.$store.commit('setTeam',{
-                            'id':response.data.id,
-                            'name':response.data.name,
-                            'plan':response.data.plan.name,
-                            'max_leads':response.data.plan.max_leads,
-                            'max_clients':response.data.plan.max_clients
-                    
-                    });
-                    toast({
-                            message:'The you plan has been updated',
-                            type:'is-success',
-                            dismissible:true,
-                            pauseOnHover:true,
-                            duration:2000,
-                            position:'bottom-right'
-                        })
+            axios
+                .post('api/v1/stripe/create_checkout_session/',data)
+                .then(response =>{
+                    console.log(response);
 
-                    this.$router.push('/dashboard/team')
-                    })
-                    .catch(error =>{
-                        console.log(error);
-                    })
+                    return this.stripe.redirectToCheckout({sessionId:response.data.sessionId})
+                })
+                .catch(error =>{
+                    console.log(error);
+                })
+            // await axios
+            //         .post(`api/v1/teams/upgrade_plan`,data)
+            //         .then(response =>{
+            //             console.log(response.data);
+            //             this.$store.commit('setTeam',{
+            //                 'id':response.data.id,
+            //                 'name':response.data.name,
+            //                 'plan':response.data.plan.name,
+            //                 'max_leads':response.data.plan.max_leads,
+            //                 'max_clients':response.data.plan.max_clients
+                    
+            //         });
+            //         toast({
+            //                 message:'The you plan has been updated',
+            //                 type:'is-success',
+            //                 dismissible:true,
+            //                 pauseOnHover:true,
+            //                 duration:2000,
+            //                 position:'bottom-right'
+            //             })
+
+            //         this.$router.push('/dashboard/team')
+            //         })
+            //         .catch(error =>{
+            //             console.log(error);
+            //         })
 
                 this.$store.commit('setIsLoading',false)
         }
