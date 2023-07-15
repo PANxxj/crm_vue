@@ -38,6 +38,10 @@
                     <button @click="subscribe('bigteam')" class="button is-primary mt-6">Subscribe</button>
                 </div>
             </div>
+            <hr>
+            <div class="column is-12">
+                <button @click="cancelPlan()" class="button is-danger">Cancel plan</button>
+            </div>
         </div>
     </div>
 </template>
@@ -58,6 +62,37 @@ export default {
         this.stripe=Stripe(this.pub_key)
     },
     methods:{
+        async cancelPlan(){
+            this.$store.commit('setIsLoading',true)
+            await axios
+            .post(`api/v1/teams/cancel_plan`)
+            .then(response =>{
+                console.log(response.data);
+                this.$store.commit('setTeam',{
+                    'id':response.data.id,
+                    'name':response.data.name,
+                    'plan':response.data.plan.name,
+                    'max_leads':response.data.plan.max_leads,
+                    'max_clients':response.data.plan.max_clients
+                    
+                    });
+                    toast({
+                        message:'The you plan has been cancelled',
+                        type:'is-success',
+                        dismissible:true,
+                        pauseOnHover:true,
+                        duration:2000,
+                        position:'bottom-right'
+                    })
+                    
+                    this.$router.push('/dashboard/team')
+                })
+                .catch(error =>{
+                    console.log(error);
+                })
+                this.$store.commit('setIsLoading',false)
+
+        },
         async getPubKey(){
             this.$store.commit('setIsLoading',true)
             
